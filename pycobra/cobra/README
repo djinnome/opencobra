@@ -1,0 +1,5 @@
+cobra for python is under development at the moment and is not supported.  If you're interested have a look around, but please know that any questions posted to the mailing lists or e-mailed to us will be ignored.  
+
+We should be posting an official announcement in the near future at which time we'll detail how to get help.
+
+If you're really interested in using this early on then please note that it has only been tested on Mac OS X 10.6 and Ubuntu GNU/Linux 10.0.4.  As things are, a number of modules must be installed on your system (see INSTALL) to use this package, and some of them are not currently (or easily) compatible with Microsoft Windows.
