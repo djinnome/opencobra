@@ -11,7 +11,7 @@ from cobra.tools import log_function
 from cobra.stats.stats import combine_p_values, error_weighted
 print "WARNING: cobra.io.feature_extraction is not ready for general use "
 def parse_file(in_file, polarity=1, return_id='accession',
-               normalization=None, lowess_parameter=0.33):
+               normalization=None, lowess_parameter=0.33, log_base=10):
     """Extract data from feature extraction >=9.5 files.  Returns
     the average log ratios for each return_id.
 
@@ -46,10 +46,29 @@ def parse_file(in_file, polarity=1, return_id='accession',
         return_id = 'SystematicName'
     gene_index = the_header.index(return_id)
     the_gene_dict = defaultdict(list)
-    if not normalization:
+    the_error_dict = defaultdict(list)
+    p_value_dict = defaultdict(list)
+    if normalization is None:
         log_ratio_index = the_header.index('LogRatio')
-        [the_gene_dict[x[gene_index]].append(float(x[log_ratio_index])*polarity)
+        log_error_index = the_header.index('LogRatioError')
+        p_value_index = the_header.index('PValueLogRatio')
+        [(the_gene_dict[x[gene_index]].append(float(x[log_ratio_index])*polarity),
+          the_error_dict[x[gene_index]].append(float(x[log_error_index])),
+          p_value_dict[x[gene_index]].append(float(x[p_value_index])))
          for x in the_data]
+        for the_gene, log_ratios in the_gene_dict.items():
+            if len(log_ratios) == 1:
+                the_gene_dict[the_gene] = log_ratios[0]
+                p_value_dict[the_gene] = p_value_dict[the_gene][0]
+                the_error_dict[the_gene] = the_error_dict[the_gene][0]
+            else:
+                the_means = map(lambda x: log_base**x, log_ratios)
+                the_stds = map(lambda x: log_base**x, the_error_dict[the_gene])
+                weighted_mean, weighted_std = error_weighted(the_means, the_stds)
+                the_gene_dict[the_gene] = log_function(weighted_mean, log_base)
+                the_error_dict[the_gene] = log_function(weighted_std, log_base)
+                p_value_dict[the_gene] = combine_p_values(p_value_dict[the_gene])
+        return {'log_ratio':the_gene_dict, 'p_value':p_value_dict, 'log_error': the_error_dict}
     elif normalization.lower() == 'lowess':
         red_index = the_header.index('rBGSubSignal')
         green_index = the_header.index('gBGSubSignal')
@@ -71,9 +90,9 @@ def parse_file(in_file, polarity=1, return_id='accession',
         m = m - lowess_fit[:,1]
         #HERE: there's a problem with zipping
         [the_gene_dict[k].append(v) for k,v in zip(gene_names,list(m))]
-    for k,v in the_gene_dict.items():
-        the_gene_dict[k] = log10(mean(map(lambda x: 10**x, v)))
-    return the_gene_dict
+        for k,v in the_gene_dict.items():
+            the_gene_dict[k] = log10(mean(map(lambda x: 10**x, v)))
+        return the_gene_dict
 
 def parse_file_a(in_file, polarity = 1, quality_control=False):
     """
@@ -200,10 +219,11 @@ def collapse_fields(data_dict, quantitative_fields=['intensity_1',
         data_dict[mean_field] = log_function(weighted_mean, log_base)
         data_dict[std_field] = log_function(weighted_std, log_base)
     #TODO:  This needs to be updated for log_error
-    [data_dict.update({k: log_function(mean(map(lambda x: log_base**x,
-                                                data_dict[k])),
-                                       log_base)})
-     for k in log_fields]
+    else:
+        [data_dict.update({k: log_function(mean(map(lambda x: log_base**x,
+                                                    data_dict[k])),
+                                           log_base)})
+         for k in log_fields]
     [data_dict.update({k: combine_p_values(data_dict[k])})
      for k in p_fields]
 
