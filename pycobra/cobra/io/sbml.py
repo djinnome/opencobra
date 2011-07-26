@@ -338,9 +338,9 @@ def write_cobra_model_to_sbml_file(cobra_model, sbml_file,
                                                                  note_start_tag=note_start_tag,
                                                                  note_end_tag=note_end_tag)
 
-        if print_time:
-           print 'Adding %s took %1.2f seconds'%('metabolites',
-                                                 time()-start_time)
+    if print_time:
+        print 'Adding %s took %1.2f seconds'%('metabolites',
+                                              time()-start_time)
     if print_time:
         start_time = time()
     for the_reaction in cobra_model.reactions:

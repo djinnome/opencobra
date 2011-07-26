@@ -66,7 +66,8 @@
 #Use this threshold and the spot finder flags for automatically marking a
 #spot as not detected.
 #
-raise Exception('cobra.io.tm4 is not ready for general use')
+print 'WARNING.  DO NOT USE cobra.io.tm4, it is not ready for general use'
+#raise Exception('cobra.io.tm4 is not ready for general use')
 bad_flags = {'S': 'Saturated', 'U': 'User Flagged', 'X': 'Failed QC',
              'Y': 'Background > Signal' ,'Z': 'Spot Not Detected'}
 import re

@@ -9,7 +9,7 @@ from scipy.stats import norm, randint
 from collections import defaultdict
 #TODO: Move application specific funtions to their own
 #files and split other functions out as well
-print 'cobra.tools contains miscellaneous functions that are under developemnt' +\
+print 'WARNING: cobra.tools contains miscellaneous functions that are under development' +\
       'use of this module IS NOT RECOMMENDED'
 def translate_entrez_via_homologene(gene_list,source_taxa='Homo sapiens',
                                     target_taxa='Mus musculus',
