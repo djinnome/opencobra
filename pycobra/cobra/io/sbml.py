@@ -391,6 +391,7 @@ def write_cobra_model_to_sbml_file(cobra_model, sbml_file,
         #Add in the kineticLaw
         sbml_law = KineticLaw(sbml_level, sbml_version)
         sbml_law.setId('FLUX_VALUE')
+        sbml_law.setFormula('FLUX_VALUE')
         reaction_parameter_dict = {'LOWER_BOUND': [the_reaction.lower_bound, reaction_units],
                                    'UPPER_BOUND': [the_reaction.upper_bound, reaction_units],
                                    'FLUX_VALUE': [0, reaction_units],
@@ -523,6 +524,6 @@ if __name__ == '__main__':
         else:
             print "FAILED: Optimization for growth (%1.3f) != expectation (%1.3f)"%(tmp_result,
                                                                                        growth_rate)
-        print 'Deleting %s'%sbml_file
-        unlink(sbml_file)
+#        print 'Deleting %s'%sbml_file
+#        unlink(sbml_file)
             
