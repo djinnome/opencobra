@@ -524,6 +524,6 @@ if __name__ == '__main__':
         else:
             print "FAILED: Optimization for growth (%1.3f) != expectation (%1.3f)"%(tmp_result,
                                                                                        growth_rate)
-#        print 'Deleting %s'%sbml_file
-#        unlink(sbml_file)
+        print 'Deleting %s'%sbml_file
+        unlink(sbml_file)
             
