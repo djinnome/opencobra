@@ -5,6 +5,19 @@ from time import time
 from copy import deepcopy
 from cobra.manipulation import initialize_growth_medium, delete_model_genes
 from cobra.flux_analysis.moma import moma
+#TODO: Add in an option for using matrices instead of objects because it
+#appears that there might be a performance penalty (especially for repetitions)
+#when using objects.
+#
+#
+#
+#older optimized matrix method:
+#    single deletion time: 7.301675 seconds
+#
+#new unoptimized object method:
+#    single deletion time: 10.307247 seconds
+#
+#  The major penalties are related to copying / indexing new models
 def single_deletion(cobra_model, element_list=None,
                     method='fba', the_problem='return',
                     element_type='gene', solver='glpk',

@@ -50,7 +50,7 @@ class Reaction(Object):
         #directly.
         self._metabolites = {}
         self._boundary_metabolites = {} #Book keeping for boundary metabolites
-        self._id_to_metabolites = {} #Caution this may not always be up to date
+        #DEPRECATED: _id_to_metabolites = {} #Caution this may not always be up to date
         #if self._metabolites is modified
         self.name = name
         #self.model is None or refers to the cobra.Model that
@@ -229,12 +229,12 @@ class Reaction(Object):
         the_metabolite: A metabolite Id.
         
         """
-        self._id_to_metabolites = dict([(x.id, x)
+        _id_to_metabolites = dict([(x.id, x)
                                         for x in self._metabolites])
 
         if hasattr(the_metabolite, 'id'):
             the_metabolite = the_metabolite.id
-        return self._metabolites[self._id_to_metabolites[the_metabolite]]
+        return self._metabolites[_id_to_metabolites[the_metabolite]]
     
     def get_coefficients(self, the_metabolites):
         """Return the stoichiometric coefficients for a list of
@@ -245,7 +245,7 @@ class Reaction(Object):
         """
         return map(self.get_coefficient, the_metabolites)
     
-    def add_metabolites(self, the_metabolites, combine=True, add_to_container_model=False):
+    def add_metabolites(self, the_metabolites, combine=True, add_to_container_model=True):
         """Add metabolites and stoichiometric coefficients to the reaction.
         If the final coefficient for a metabolite is 0 then it is removed
         from the reaction.
@@ -261,14 +261,14 @@ class Reaction(Object):
         then add the metabolite to the model.
 
         """
-        self._id_to_metabolites = dict([(x.id, x)
+        _id_to_metabolites = dict([(x.id, x)
                                         for x in self._metabolites])
         new_metabolites = []
         for the_metabolite, the_coefficient in the_metabolites.items():
             #If a metabolite already exists in the reaction then
             #just add them.
-            if the_metabolite.id in self._id_to_metabolites:
-                reaction_metabolite = self._id_to_metabolites[the_metabolite.id]
+            if the_metabolite.id in _id_to_metabolites:
+                reaction_metabolite = _id_to_metabolites[the_metabolite.id]
                 if combine:
                     self._metabolites[reaction_metabolite] += the_coefficient
                 else:
@@ -285,7 +285,7 @@ class Reaction(Object):
                 the_metabolite._reaction.remove(self)
                 self._metabolites.pop(the_metabolite)
         self.reconstruct_reaction()
-        self._id_to_metabolites = dict([(x.id, x)
+        _id_to_metabolites = dict([(x.id, x)
                                         for x in self._metabolites])
         if add_to_container_model and hasattr(self._model, 'add_metabolites'):
             self._model.add_metabolites(new_metabolites)
