@@ -361,7 +361,7 @@ def write_cobra_model_to_sbml_file(cobra_model, sbml_file,
         #Add in the reactant/product references
         for the_metabolite, the_coefficient in the_reaction._metabolites.items():
             sbml_stoichiometry = the_coefficient
-            metabolite_id = metabolite_dict[the_metabolite.id]
+            metabolite_id = str(metabolite_dict[the_metabolite.id])
             #Each SpeciesReference must have a unique id
             if sbml_stoichiometry < 0:
                 species_reference = sbml_reaction.createReactant()
