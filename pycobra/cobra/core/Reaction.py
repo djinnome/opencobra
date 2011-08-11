@@ -311,11 +311,14 @@ class Reaction(Object):
         self.add_metabolites(the_metabolites)
 
         
-    def parse_reaction(self):
+    def _parse_reaction(self):
         """
         This is necessary when parsing text files.  It is better
-        to get the reactions from SBML files
+        to get the reactions from SBML files.
+
+        WARNING: this needs to be updated to deal with non-palssonesqe reactions.
         """
+        raise Exception('WARNING: this needs to be updated to deal with non-palssonesqe reactions.')
         if not self.id:
             print 'Reaction has not been populated.'
             return

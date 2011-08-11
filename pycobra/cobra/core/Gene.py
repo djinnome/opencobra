@@ -9,7 +9,7 @@ class Gene(Metabolite):
 
     TODO: Make design decisions about TUs and such
     """
-    def __init__(self, id, coefficient=None, formula=None,
+    def __init__(self, id, formula=None,
                  name=None, compartment=None, strand='+',
                  locus_start=0, locus_end=0, functional=True):
         """
@@ -18,9 +18,6 @@ class Gene(Metabolite):
         formula: cobra.Formula or String  of a chemical formula.  Defaults to None
         to save time in pickling and such.
         
-        coefficient: None or a float.  Used when the metabolite is contained
-        in a cobra.Reaction object.
-
         name: String.  A human readable name.
         
         compartment: None or a dictionary indicating the cellular location
@@ -38,7 +35,7 @@ class Gene(Metabolite):
         can its products be used.
         
         """
-        Metabolite.__init__(self, id, coefficient=coefficient, formula=formula,
+        Metabolite.__init__(self, id, formula=formula,
                             name=name, compartment=compartment)
         self.locus_start = locus_start
         self.locus_end = locus_end

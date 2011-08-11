@@ -18,7 +18,7 @@ class Metabolite(Object):
     ##    from cobra.core.Metabolite import Metabolite
     ##    Object.__setstate__(self, the_dict)
     ##    [self.__setattr__(k, v) for k, v in the_dict]
-    def __init__(self, id=None,  coefficient=None, formula=None,
+    def __init__(self, id=None, formula=None,
                  name=None, compartment=None):
         """
         id: A string.
@@ -26,9 +26,6 @@ class Metabolite(Object):
         formula: cobra.Formula or String  of a chemical formula.  Defaults to None
         to save time in pickling and such.
         
-        coefficient: None or a float.  Used when the metabolite is contained
-        in a cobra.Reaction object.
-
         name: String.  A human readable name.
         
         compartment: None or a dictionary indicating the cellular location
@@ -36,8 +33,6 @@ class Metabolite(Object):
         object
         
         """
-        if coefficient is not None:
-            raise Exception('Metabolites no longer have a coefficient attribute')
         Object.__init__(self, id)
         self.name = name
         if not name:
