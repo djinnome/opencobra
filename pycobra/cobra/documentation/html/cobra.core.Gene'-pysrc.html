@@ -68,7 +68,7 @@
 <a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
 <a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-docstring">    TODO: Make design decisions about TUs and such</tt> </tt>
 <a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
-<a name="Gene.__init__"></a><div id="Gene.__init__-def"><a name="L12"></a><tt class="py-lineno">12</tt> <a class="py-toggle" href="#" id="Gene.__init__-toggle" onclick="return toggle('Gene.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="cobra.core.Gene'.Gene-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">id</tt><tt class="py-op">,</tt> <tt class="py-param">coefficient</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">formula</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> </tt>
+<a name="Gene.__init__"></a><div id="Gene.__init__-def"><a name="L12"></a><tt class="py-lineno">12</tt> <a class="py-toggle" href="#" id="Gene.__init__-toggle" onclick="return toggle('Gene.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="cobra.core.Gene'.Gene-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">id</tt><tt class="py-op">,</tt> <tt class="py-param">formula</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> </tt>
 <a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line">                 <tt class="py-param">name</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">compartment</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">strand</tt><tt class="py-op">=</tt><tt class="py-string">'+'</tt><tt class="py-op">,</tt> </tt>
 <a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line">                 <tt class="py-param">locus_start</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-param">locus_end</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-param">functional</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 </div><div id="Gene.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Gene.__init__-expanded"><a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
@@ -77,43 +77,40 @@
 <a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-docstring">        formula: cobra.Formula or String  of a chemical formula.  Defaults to None</tt> </tt>
 <a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-docstring">        to save time in pickling and such.</tt> </tt>
 <a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
-<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-docstring">        coefficient: None or a float.  Used when the metabolite is contained</tt> </tt>
-<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-docstring">        in a cobra.Reaction object.</tt> </tt>
-<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"><tt class="py-docstring">        name: String.  A human readable name.</tt> </tt>
-<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
-<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"><tt class="py-docstring">        compartment: None or a dictionary indicating the cellular location</tt> </tt>
-<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"><tt class="py-docstring">        of the metabolite.  Used when in a cobra.Reaction or Model</tt> </tt>
-<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"><tt class="py-docstring">        object</tt> </tt>
-<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"><tt class="py-docstring">        strand: '+' or '-' to indicate forward or reverse strand for DNA.</tt> </tt>
-<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"><tt class="py-docstring">        locus_start: Int.  The index of the starting base for the gene.</tt> </tt>
-<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"><tt class="py-docstring">        locus_end: Int. The index of the last base for the gene.</tt> </tt>
-<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"><tt class="py-docstring">        functional: Boolean.  Indicate whether the gene is functional.  If it</tt> </tt>
-<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line"><tt class="py-docstring">        is not functional then it cannot be used in an enzyme complex nor</tt> </tt>
-<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"><tt class="py-docstring">        can its products be used.</tt> </tt>
-<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
-<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
-<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">        <tt id="link-2" class="py-name"><a title="cobra.core.Metabolite'.Metabolite" class="py-name" href="#" onclick="return doclink('link-2', 'Metabolite', 'link-0');">Metabolite</a></tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Method cobra.core.Formula'.Formula.__init__()=cobra.core.Formula%27.Formula-class.html#__init__,Method cobra.core.Gene'.Gene.__init__()=cobra.core.Gene%27.Gene-class.html#__init__,Method cobra.core.Metabolite'.Metabolite.__init__()=cobra.core.Metabolite%27.Metabolite-class.html#__init__,Method cobra.core.Model'.Model.__init__()=cobra.core.Model%27.Model-class.html#__init__,Method cobra.core.Object.Object.__init__()=cobra.core.Object.Object-class.html#__init__,Method cobra.core.Reaction'.Reaction.__init__()=cobra.core.Reaction%27.Reaction-class.html#__init__,Method cobra.core.Solution'.Solution.__init__()=cobra.core.Solution%27.Solution-class.html#__init__,Method cobra.general.arrays.ResultsArray.__init__()=cobra.general.arrays.ResultsArray-class.html#__init__"><a title="cobra.core.Formula'.Formula.__init__
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-docstring">        name: String.  A human readable name.</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-docstring">        compartment: None or a dictionary indicating the cellular location</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"><tt class="py-docstring">        of the metabolite.  Used when in a cobra.Reaction or Model</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"><tt class="py-docstring">        object</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"><tt class="py-docstring">        strand: '+' or '-' to indicate forward or reverse strand for DNA.</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"><tt class="py-docstring">        locus_start: Int.  The index of the starting base for the gene.</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"><tt class="py-docstring">        locus_end: Int. The index of the last base for the gene.</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"><tt class="py-docstring">        functional: Boolean.  Indicate whether the gene is functional.  If it</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"><tt class="py-docstring">        is not functional then it cannot be used in an enzyme complex nor</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"><tt class="py-docstring">        can its products be used.</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">        <tt id="link-2" class="py-name"><a title="cobra.core.Metabolite'.Metabolite" class="py-name" href="#" onclick="return doclink('link-2', 'Metabolite', 'link-0');">Metabolite</a></tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Method cobra.core.Formula'.Formula.__init__()=cobra.core.Formula%27.Formula-class.html#__init__,Method cobra.core.Gene'.Gene.__init__()=cobra.core.Gene%27.Gene-class.html#__init__,Method cobra.core.Metabolite'.Metabolite.__init__()=cobra.core.Metabolite%27.Metabolite-class.html#__init__,Method cobra.core.Model'.Model.__init__()=cobra.core.Model%27.Model-class.html#__init__,Method cobra.core.Object.Object.__init__()=cobra.core.Object.Object-class.html#__init__,Method cobra.core.Reaction'.Reaction.__init__()=cobra.core.Reaction%27.Reaction-class.html#__init__,Method cobra.core.Solution'.Solution.__init__()=cobra.core.Solution%27.Solution-class.html#__init__,Method cobra.general.arrays.ResultsArray.__init__()=cobra.general.arrays.ResultsArray-class.html#__init__"><a title="cobra.core.Formula'.Formula.__init__
 cobra.core.Gene'.Gene.__init__
 cobra.core.Metabolite'.Metabolite.__init__
 cobra.core.Model'.Model.__init__
 cobra.core.Object.Object.__init__
 cobra.core.Reaction'.Reaction.__init__
 cobra.core.Solution'.Solution.__init__
-cobra.general.arrays.ResultsArray.__init__" class="py-name" href="#" onclick="return doclink('link-3', '__init__', 'link-3');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">id</tt><tt class="py-op">,</tt> <tt class="py-name">coefficient</tt><tt class="py-op">=</tt><tt class="py-name">coefficient</tt><tt class="py-op">,</tt> <tt class="py-name">formula</tt><tt class="py-op">=</tt><tt class="py-name">formula</tt><tt class="py-op">,</tt> </tt>
-<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">                            <tt class="py-name">name</tt><tt class="py-op">=</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">compartment</tt><tt class="py-op">=</tt><tt class="py-name">compartment</tt><tt class="py-op">)</tt> </tt>
-<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">locus_start</tt> <tt class="py-op">=</tt> <tt class="py-name">locus_start</tt> </tt>
-<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">locus_end</tt> <tt class="py-op">=</tt> <tt class="py-name">locus_end</tt> </tt>
-<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">strand</tt> <tt class="py-op">=</tt> <tt class="py-name">strand</tt> </tt>
-<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">functional</tt> <tt class="py-op">=</tt> <tt class="py-name">functional</tt> </tt>
-</div></div><a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
-<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"><tt class="py-comment">#END Class Gene</tt> </tt>
-<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"><tt class="py-comment">########################</tt> </tt>
-<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+cobra.general.arrays.ResultsArray.__init__" class="py-name" href="#" onclick="return doclink('link-3', '__init__', 'link-3');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">id</tt><tt class="py-op">,</tt> <tt class="py-name">formula</tt><tt class="py-op">=</tt><tt class="py-name">formula</tt><tt class="py-op">,</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">                            <tt class="py-name">name</tt><tt class="py-op">=</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">compartment</tt><tt class="py-op">=</tt><tt class="py-name">compartment</tt><tt class="py-op">)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">locus_start</tt> <tt class="py-op">=</tt> <tt class="py-name">locus_start</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">locus_end</tt> <tt class="py-op">=</tt> <tt class="py-name">locus_end</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">strand</tt> <tt class="py-op">=</tt> <tt class="py-name">strand</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">functional</tt> <tt class="py-op">=</tt> <tt class="py-name">functional</tt> </tt>
+</div></div><a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"><tt class="py-comment">#END Class Gene</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"><tt class="py-comment">########################</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -146,7 +143,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jul  4 11:39:02 2011
+    Generated by Epydoc 3.0.1 on Thu Aug 11 13:37:44 2011
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

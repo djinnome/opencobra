@@ -168,6 +168,23 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a href="cobra.core.Reaction%27.Reaction-class.html#_parse_reaction" class="summary-sig-name" onclick="show_private();">_parse_reaction</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      This is necessary when parsing text files.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="cobra.core.Reaction%27-pysrc.html#Reaction._parse_reaction">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a name="_update_awareness"></a><span class="summary-sig-name">_update_awareness</span>(<span class="summary-sig-arg">self</span>)</span><br />
       Make sure all metabolites and genes that are associated with this 
       reaction are aware of it.</td>
@@ -189,7 +206,7 @@
           <td><span class="summary-sig"><a href="cobra.core.Reaction%27.Reaction-class.html#add_metabolites" class="summary-sig-name">add_metabolites</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">the_metabolites</span>,
         <span class="summary-sig-arg">combine</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">add_to_container_model</span>=<span class="summary-sig-default">False</span>)</span><br />
+        <span class="summary-sig-arg">add_to_container_model</span>=<span class="summary-sig-default">True</span>)</span><br />
       Add metabolites and stoichiometric coefficients to the reaction.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="cobra.core.Reaction%27-pysrc.html#Reaction.add_metabolites">source&nbsp;code</a></span>
@@ -336,23 +353,6 @@
       Extract all genes from the Boolean Gene_Association string.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="cobra.core.Reaction%27-pysrc.html#Reaction.parse_gene_association">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="cobra.core.Reaction%27.Reaction-class.html#parse_reaction" class="summary-sig-name">parse_reaction</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      This is necessary when parsing text files.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="cobra.core.Reaction%27-pysrc.html#Reaction.parse_reaction">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -645,6 +645,28 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="_parse_reaction"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_parse_reaction</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="cobra.core.Reaction%27-pysrc.html#Reaction._parse_reaction">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This is necessary when parsing text files.  It is better to get the 
+  reactions from SBML files.</p>
+  <p>WARNING: this needs to be updated to deal with non-palssonesqe 
+  reactions.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
 <a name="add_metabolites"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -655,7 +677,7 @@
   <h3 class="epydoc"><span class="sig"><span class="sig-name">add_metabolites</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">the_metabolites</span>,
         <span class="sig-arg">combine</span>=<span class="sig-default">True</span>,
-        <span class="sig-arg">add_to_container_model</span>=<span class="sig-default">False</span>)</span>
+        <span class="sig-arg">add_to_container_model</span>=<span class="sig-default">True</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="cobra.core.Reaction%27-pysrc.html#Reaction.add_metabolites">source&nbsp;code</a></span>&nbsp;
@@ -785,26 +807,6 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="parse_reaction"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">parse_reaction</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="cobra.core.Reaction%27-pysrc.html#Reaction.parse_reaction">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>This is necessary when parsing text files.  It is better to get the 
-  reactions from SBML files</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
 <a name="pop"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -926,7 +928,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jul  4 11:39:01 2011
+    Generated by Epydoc 3.0.1 on Thu Aug 11 13:37:44 2011
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

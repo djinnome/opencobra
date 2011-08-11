@@ -80,8 +80,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="p_adjust"></a><span class="summary-sig-name">p_adjust</span>(<span class="summary-sig-arg">p_list</span>,
-        <span class="summary-sig-arg">correction_method</span>=<span class="summary-sig-default">'bh'</span>)</span></td>
+          <td><span class="summary-sig"><a href="cobra.stats.stats-module.html#p_adjust" class="summary-sig-name">p_adjust</a>(<span class="summary-sig-arg">the_p_values</span>,
+        <span class="summary-sig-arg">correction_method</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">bh</code><code class="variable-quote">'</code></span>)</span><br />
+      Adjusts the p-values in a list for multiple hypothesis testing.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="cobra.stats.stats-pysrc.html#p_adjust">source&nbsp;code</a></span>
             
@@ -97,8 +98,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="combine_p_values"></a><span class="summary-sig-name">combine_p_values</span>(<span class="summary-sig-arg">the_p_values</span>,
-        <span class="summary-sig-arg">method</span>=<span class="summary-sig-default">'z'</span>)</span></td>
+          <td><span class="summary-sig"><a href="cobra.stats.stats-module.html#combine_p_values" class="summary-sig-name">combine_p_values</a>(<span class="summary-sig-arg">the_p_values</span>,
+        <span class="summary-sig-arg">method</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">z</code><code class="variable-quote">'</code></span>)</span><br />
+      Combines p-values from repeat measurements into a single p-value.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="cobra.stats.stats-pysrc.html#combine_p_values">source&nbsp;code</a></span>
             
@@ -127,6 +129,31 @@
     </td>
   </tr>
 </table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'cobra.stats'"><code class="variable-quote">'</code><code class="variable-string">cobra.stats</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
 <!-- ==================== FUNCTION DETAILS ==================== -->
 <a name="section-FunctionDetails"></a>
 <table class="details" border="1" cellpadding="3"
@@ -145,6 +172,54 @@
   </td>
 </tr>
 </table>
+<a name="p_adjust"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">p_adjust</span>(<span class="sig-arg">the_p_values</span>,
+        <span class="sig-arg">correction_method</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">bh</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="cobra.stats.stats-pysrc.html#p_adjust">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Adjusts the p-values in a list for multiple hypothesis testing.</p>
+  <p>the_p_values: a list of p-values</p>
+  <p>correction_method: String.  'bh'|'by'|'bonferroni'.  'bh' for 
+  Benjamini &amp; Hochberg, 'by' for Benjamini &amp; Yekuieli, and 
+  'bonferroni' for Bonferroni.</p>
+  <p>NOTE: 'bh' and 'by' require R and rpy2 installed</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="combine_p_values"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">combine_p_values</span>(<span class="sig-arg">the_p_values</span>,
+        <span class="sig-arg">method</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">z</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="cobra.stats.stats-pysrc.html#combine_p_values">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Combines p-values from repeat measurements into a single p-value.</p>
+  <p>the_p_values: a list of p-values.</p>
+  <p>method: String. 'z'|'fisher'.  'z' for using the weighted z-score. 
+  'fisher' for using fisher's combined probability test.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
 <a name="error_weighted"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -194,7 +269,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jul  4 11:39:01 2011
+    Generated by Epydoc 3.0.1 on Thu Aug 11 13:37:44 2011
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
