@@ -3,6 +3,7 @@
 #BEGIN Class Formula
 #
 import re
+from warnings import warn
 from copy import deepcopy
 from Object import Object
 class Formula(Object):
@@ -134,13 +135,18 @@ class Formula(Object):
         #Deal with historical laziness associated with not
         #calculating the compositions of large molecules and
         #instead using an R or X.
-        if ('R' in self.formula and 'R' not in weight_dict) or\
-           ('X' in self.formula and 'X' not in weight_dict):
+        try:
+            self.weight = 0.
+            self.weight = sum([the_count*weight_dict[the_element]
+                               for the_element, the_count in self.elements.items()])
+        except:
             self.weight = None
-            return
-        self.weight = 0.
-        self.weight = sum([the_count*weight_dict[the_element]
-                           for the_element, the_count in self.elements.items()])
+            if weight_dict == elements_and_molecular_weights:
+                warn('An element in %s is not in Formula.'%self.formula +\
+                     'elements_and_molecular_weights. Consider supplying your own weight_dict')
+            else:
+                warn('An element in %s is not in weight_dict %s'%(self.formula, weight_dict))
+                
             
 
 #
@@ -157,6 +163,7 @@ elements_and_molecular_weights = {'Ag': 107.87,
                                   'Cd': 112.41,
                                   'Cl': 35.453,
                                   'Co': 58.933,
+                                  'Cr' : 51.996,
                                   'Cu': 63.546,
                                   'Fe': 55.847,
                                   'H': 1.0079,
@@ -173,5 +180,8 @@ elements_and_molecular_weights = {'Ag': 107.87,
                                   'P': 30.974,
                                   'S': 32.06,
                                   'Se': 78.96,
+                                  'Tc' : 98.0,
+                                  'U' : 238.029,
+                                  'V' : 50.9415,
                                   'W': 183.85,
                                   'Zn': 65.38}
