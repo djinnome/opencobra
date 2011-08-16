@@ -11,7 +11,6 @@ if hasattr(sys, 'JYTHON_JAR'):
 else:
     from scipy import sparse
     from numpy import where, array, ones
-from cobra.query import search_list_for_pattern
 import re
 from copy import deepcopy
 def prune_unused_metabolites(cobra_model):

@@ -18,7 +18,6 @@ if hasattr(sys, 'JYTHON_JAR'):
 else:
     from scipy import sparse
     from numpy import where, array, ones
-from cobra.query import search_list_for_pattern
 
 def add_exchange_reaction(cobra_model, the_metabolites,
                           reaction_reversibility=False):
