@@ -4,7 +4,10 @@ import cPickle,numpy, os, cobra
 from copy import deepcopy
 from scipy.sparse import dok_matrix
 from cobra import Model, Reaction, Metabolite, Formula
-print 'WARNING: This cobra.mlab is probably not functional at the moment.'
+mlab_path = cobra.__path__[0] + '/mlab/matlab_scripts/'
+from mlabwrap import mlab as matlab
+matlab.changeCobraSolver('glpk','LP')
+matlab.addpath(mlab_path)
 #Project defined modules
 def matlab_cell_to_python_list(the_cell):
     try:
@@ -239,11 +242,12 @@ def cobra_model_object_to_cobra_matlab_struct(cobra_model):
     matlab_struct.subSystems = python_list_to_matlab_cell([x.subsystem
                                                            for x in cobra_model.reactions],
                                                            transpose=True)
+
     if hasattr(cobra_model, '_constraint_sense'):
-       matlab_struct.csense = python_list_to_matlab_cell(cobra_model._constraint_sense)
+        matlab_struct.csense = reduce(lambda x,y: x+y, cobra_model._constraint_sense)
     #matlab_struct.csense = python_list_to_matlab_cell(['E']*len(cobra_model.metabolites), transpose = True)
     #TODO: inefficient conversion but who cares? matlab's on its way out
-    matlab_struct._S = scipy_sparse_to_mlab_sparse(cobra_model._S)
+    matlab_struct.S = scipy_sparse_to_mlab_sparse(cobra_model._S)
     #Things that can be directly copied
     matlab_struct.b = cobra_model._b
     matlab_struct.c = cobra_model._objective_coefficients
@@ -255,3 +259,24 @@ def cobra_model_object_to_cobra_matlab_struct(cobra_model):
 
 
 
+if __name__ == '__main__':
+    from cPickle import load
+    from time import time
+    from numpy import round
+    from cobra.manipulation import initialize_growth_medium
+    test_directory = '../test/data/'
+    with open(test_directory + 'salmonella.pickle') as in_file:
+        cobra_model = load(in_file)
+    initialize_growth_medium(cobra_model, 'LPM')
+    py_cobra_solution = repr(cobra_model.solution.f)
+    matlab_struct = cobra_model_object_to_cobra_matlab_struct(cobra_model)
+    matlab_result = matlab.optimizeCbModel(matlab_struct)
+    matlab_solution = repr(float(matlab_result.f))
+    if py_cobra_solution[:4] == matlab_solution[:4]:
+        print 'SUCCESS: growth rate match between pyCOBRA and COBRA Toolbox: %s ~ %s'%(py_cobra_solution,
+                                                                                       matlab_solution)
+    else:
+        print 'FAILURE: pyCOBRA and COBRA Toolbox do not match: %s !~ %s'%(py_cobra_solution,
+                                                                                       matlab_solution)
+
+        
