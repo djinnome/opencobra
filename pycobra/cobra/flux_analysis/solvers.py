@@ -31,7 +31,7 @@ def update_objective(cobra_model, the_objectives):
             
 def optimize_cplex(cobra_model, new_objective=None, objective_sense='maximize',
                    min_norm=0, the_problem=None, 
-                   tolerance_optimality=1e-6, tolerance_feasibility=1e-6,
+                   tolerance_optimality=1e-6, tolerance_feasibility=1e-6, tolerance_integer=1e-9,
                    tolerance_barrier=1e-8,error_reporting=None, 
                    print_solver_time=False, lp_method=1, lp_parallel=0, copy_problem=False,
                    relax_b=None, quadratic_component=None, reuse_basis=True):
@@ -286,7 +286,7 @@ def optimize_cplex(cobra_model, new_objective=None, objective_sense='maximize',
 def optimize_gurobi(cobra_model, new_objective=None, objective_sense='maximize',
                     min_norm=0, the_problem=None,
                     tolerance_optimality=1e-6, tolerance_feasibility=1e-6,
-                    tolerance_barrier=None, error_reporting=None,
+                    tolerance_barrier=None, tolerance_integer=1e-9, error_reporting=None,
                     print_solver_time=False, copy_problem=False, lp_method=0,
                     relax_b=None, quad_precision=False, quadratic_component=None,
                     reuse_basis=True, lp_parallel=None):
@@ -548,9 +548,9 @@ def optimize_quadratic_program(cobra_model, quadratic_component,
 
 def optimize_glpk(cobra_model, new_objective=None, objective_sense='maximize',
                   min_norm=0, the_problem=None, 
-                  tolerance_optimality=1e-6, tolerance_feasibility=1e-6,
+                  tolerance_optimality=1e-6, tolerance_feasibility=1e-6, tolerance_integer=1e-9,
                   error_reporting=None, print_solver_time=False,
-                  return_untainted_basis=True, lp_method=1, quadratic_component=None,
+                 lp_method=1, quadratic_component=None,
                   reuse_basis=True,
                   #Not implemented
                   tolerance_barrier=None, lp_parallel=None,
@@ -593,6 +593,8 @@ def optimize_glpk(cobra_model, new_objective=None, objective_sense='maximize',
          hot start: 0.0013 seconds
     """
     from numpy import zeros, array, nan
+    variable_kind_dict = {'continuous': float,
+                          'integer': int}
     #TODO: Speed up problem creation
     if hasattr(quadratic_component, 'todok'):
         raise Exception('GLPK cannot solve quadratic programs please '+\
@@ -609,7 +611,6 @@ def optimize_glpk(cobra_model, new_objective=None, objective_sense='maximize',
                                cobra_model.reactions))
     reaction_to_index = dict(zip(cobra_model.reactions,
                                  range(len(cobra_model.reactions))))
-
     
     if the_problem == None or the_problem in ['return', 'setup'] or \
            not isinstance(the_problem, LPX):
@@ -640,7 +641,9 @@ def optimize_glpk(cobra_model, new_objective=None, objective_sense='maximize',
         objective_coefficients = []
         for c in lp.cols:
             the_reaction = index_to_reaction[c.index]
-            c.name = the_reaction.id
+            c.name = the_reaction.id           
+            the_reaction = index_to_reaction[c.index]
+            c.kind = variable_kind_dict[the_reaction.variable_kind]
             c.bounds = the_reaction.lower_bound, the_reaction.upper_bound
             objective_coefficients.append(float(the_reaction.objective_coefficient))
         #Add the new objective coefficients to the problem
@@ -655,6 +658,7 @@ def optimize_glpk(cobra_model, new_objective=None, objective_sense='maximize',
                 c.name = the_reaction.id
                 c.bounds = the_reaction.lower_bound, the_reaction.upper_bound
                 objective_coefficients.append(float(the_reaction.objective_coefficient))
+                c.kind = variable_kind_dict[the_reaction.variable_kind]
             #Add the new objective coefficients to the problem
             lp.obj[:] = objective_coefficients
         else:
@@ -662,7 +666,8 @@ def optimize_glpk(cobra_model, new_objective=None, objective_sense='maximize',
                 the_reaction = index_to_reaction[c.index]
                 c.name = the_reaction.id
                 c.bounds = the_reaction.lower_bound, the_reaction.upper_bound
-            
+                c.kind = variable_kind_dict[the_reaction.variable_kind]
+
     if objective_sense.lower() == 'maximize':
         lp.obj.maximize = True # Set this as a maximization problem
     else:
@@ -677,21 +682,40 @@ def optimize_glpk(cobra_model, new_objective=None, objective_sense='maximize',
     else:
         lp_method = 1
     if not isinstance(the_problem, LPX):
-       lp.simplex(tol_bnd=tolerance_optimality, tol_dj=tolerance_optimality, meth=lp_method)
-       # Solve this LP with the simplex method.  Takes about 0.35 s without hot start
+       if lp.kind == int:
+           lp.simplex(tol_bnd=tolerance_optimality, tol_dj=tolerance_optimality, meth=lp_method)  # we first have to solve the LP?
+           lp.integer(tol_int=tolerance_integer)
+       else:
+           lp.simplex(tol_bnd=tolerance_optimality, tol_dj=tolerance_optimality, meth=lp_method)
+       # Solve this LP or MIP with the simplex (depending on if integer variables exist).  Takes about 0.35 s without hot start
+    
        if lp.status != 'opt':
            for lp_method in the_methods:
                lp.simplex(tol_bnd=tolerance_optimality, tol_dj=tolerance_optimality, meth=lp_method)
                if lp.status == 'opt':
+                   if lp.kind == int:
+                       lp.integer(tol_int=tolerance_integer)
                    break
     else:
-        lp.simplex(tol_bnd=tolerance_optimality, tol_dj=tolerance_optimality, meth=lp_method, tm_lim=100) 
+        if lp.kind == int:
+            lp.simplex(tol_bnd=tolerance_optimality, tol_dj=tolerance_optimality, meth=lp_method, tm_lim=100)  # we first have to solve the LP?
+            lp.integer(tol_int=tolerance_integer)
+        else:
+            lp.simplex(tol_bnd=tolerance_optimality, tol_dj=tolerance_optimality, meth=lp_method, tm_lim=100)
+       
         #If the solver takes more than 0.1 s with a hot start it is likely stuck
         if lp.status != 'opt':
-           for lp_method in the_methods:
-               lp.simplex(tol_bnd=tolerance_optimality, tol_dj=tolerance_optimality, meth=lp_method)
-               if lp.status == 'opt':
-                   break
+            if lp.kind == int:
+               lp.simplex(tol_bnd=tolerance_optimality, tol_dj=tolerance_optimality, meth=lp_method)  # we first have to solve the LP?
+               lp.integer(tol_int=tolerance_integer)
+            else:
+               for lp_method in the_methods:
+                   lp.simplex(tol_bnd=tolerance_optimality, tol_dj=tolerance_optimality, meth=lp_method)
+                   if lp.status == 'opt':
+                       if lp.kind == int:
+                           lp.integer(tol_int=tolerance_integer) 
+                       break
+
         if lp.status != 'opt':
             lp = optimize_glpk(cobra_model, new_objective=new_objective,
                                objective_sense=objective_sense,
@@ -699,8 +723,15 @@ def optimize_glpk(cobra_model, new_objective=None, objective_sense='maximize',
                                print_solver_time=print_solver_time,
                                tolerance_optimality=tolerance_optimality,
                                tolerance_feasibility=tolerance_feasibility)['the_problem']
+            if lp.status == 'opt':
+                if lp.kind == int:
+                    lp.integer(tol_int=tolerance_integer)
+
         if lp.status != 'opt':
             lp.simplex(tol_bnd=tolerance_optimality, presolve=True, tm_lim=5000)
+            if lp.kind == int:
+                lp.integer(tol_int=tolerance_integer)
+
     if print_solver_time:
         print 'simplex time: %f'%(time() - start_time)
     x = []

@@ -60,7 +60,8 @@ class Reaction(Object):
         self.boundary = None #None, 'system_boundary'
         self.objective_coefficient = self.lower_bound = 0.
         self.upper_bound = 1000.
-
+	self.variable_kind = 'continuous' #Used during optimization.  Indicates whether the
+        #variable is modeled as continuous, integer, binary, semicontinous, or semiinteger.
 
     def _update_awareness(self):
         """Make sure all metabolites and genes that are associated with
