@@ -6,7 +6,7 @@ from scipy.sparse import dok_matrix
 from cobra import Model, Reaction, Metabolite, Formula
 mlab_path = cobra.__path__[0] + '/mlab/matlab_scripts/'
 from mlabwrap import mlab as matlab
-matlab.changeCobraSolver('glpk','LP')
+
 matlab.addpath(mlab_path)
 #Project defined modules
 def matlab_cell_to_python_list(the_cell):
@@ -145,6 +145,8 @@ def matlab_cobra_struct_to_python_cobra_object(matlab_struct):
             _constraint_sense = [the_csense[i] for i in range(len(the_csense))]
         else:
             _constraint_sense = matlab_cell_to_python_list(matlab_struct.csense)
+    else:
+        _constraint_sense = ['E']*len(cobra_metabolites)
     if 'metFormulas' in struct_fields:
         _metabolite_formulas = matlab_cell_to_python_list(matlab_struct.metFormulas)
     else:
@@ -264,12 +266,18 @@ if __name__ == '__main__':
     from time import time
     from numpy import round
     from cobra.manipulation import initialize_growth_medium
+    try:
+        matlab.changeCobraSolver('glpk','LP')
+    except AttributeError:
+        raise Exception('Could not run matlab function changeCobraSolver.  Is the ' +\
+                        'COBRA Toolbox in your MATLAB path?')
     test_directory = '../test/data/'
     with open(test_directory + 'salmonella.pickle') as in_file:
         cobra_model = load(in_file)
     initialize_growth_medium(cobra_model, 'LPM')
     py_cobra_solution = repr(cobra_model.solution.f)
     matlab_struct = cobra_model_object_to_cobra_matlab_struct(cobra_model)
+
     matlab_result = matlab.optimizeCbModel(matlab_struct)
     matlab_solution = repr(float(matlab_result.f))
     if py_cobra_solution[:4] == matlab_solution[:4]:
