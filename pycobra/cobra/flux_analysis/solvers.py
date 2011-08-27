@@ -62,6 +62,15 @@ def optimize_cplex(cobra_model, new_objective=None, objective_sense='maximize',
     print_solver_time: False or True.  Indicates if the time to calculate the solution
     should be displayed.
 
+    quadratic_component: None or 
+          scipy.sparse.array of dim(len(cobra_model.reactions),len(cobra_model.reactions))
+         If not None:
+          Solves quadratic programming problems for cobra_models of the form:
+          minimize: 0.5 * x' * quadratic_component * x + cobra_model._objective_coefficients' * x
+          such that,
+            cobra_model._lower_bounds <= x <= cobra_model._upper_bounds
+            cobra_model._S * x (cobra_model._constraint_sense) cobra_model._b
+            
     reuse_basis: Boolean.  If True and the_problem is a model object for the solver,
     attempt to hot start the solution.
 
@@ -74,6 +83,8 @@ def optimize_cplex(cobra_model, new_objective=None, objective_sense='maximize',
          hot start: 0.05 seconds (slow due to copying the LP)
 
     """
+    variable_kind_dict = {'continuous': 'C',
+                          'integer': 'I'}
     if relax_b is not None:
         raise Exception('Need to reimplement constraint relaxation')
     from numpy import array, nan, zeros
@@ -100,11 +111,14 @@ def optimize_cplex(cobra_model, new_objective=None, objective_sense='maximize',
         lower_bounds = []
         upper_bounds = []
         variable_names = []
+        variable_kinds = []
         [(objective_coefficients.append(x.objective_coefficient),
           lower_bounds.append(x.lower_bound),
           upper_bounds.append(x.upper_bound),
-          variable_names.append(x.id))
+          variable_names.append(x.id),
+          variable_kinds.append(variable_kind_dict[x.variable_kind]))
          for x in cobra_model.reactions]
+        variable_kinds = reduce(lambda x, y: x + y, variable_kinds) 
         lp.variables.add(obj=objective_coefficients,
                          lb=lower_bounds,
                          ub=upper_bounds,
@@ -355,6 +369,9 @@ def optimize_gurobi(cobra_model, new_objective=None, objective_sense='maximize',
     sense_dict = {'E': GRB.EQUAL,
                   'L': GRB.LESS_EQUAL,
                   'G': GRB.GREATER_EQUAL}
+    variable_kind_dict = {'continuous': GRB.CONTINUOUS,
+                          'integer': GRB.INTEGER}
+
     from cobra.flux_analysis.solvers import update_objective
     #Update objectives if they are new.
     if new_objective and new_objective != 'update problem':
@@ -370,7 +387,8 @@ def optimize_gurobi(cobra_model, new_objective=None, objective_sense='maximize',
         variable_list = [lp.addVar(lb=float(x.lower_bound),
                                    ub=float(x.upper_bound),
                                    obj=objective_sense*float(x.objective_coefficient),
-                                   name=x.id)
+                                   name=x.id,
+                                   vtype=variable_kind_dict[x.variable_kind])
                          for x in cobra_model.reactions]
         reaction_to_variable = dict(zip(cobra_model.reactions,
                                         variable_list))
