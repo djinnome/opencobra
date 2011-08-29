@@ -141,6 +141,41 @@ class Reaction(Object):
         new_reaction = deepcopy(self)
         ## self._model = the_model
         return new_reaction
+    def guided_copy(self, the_model, metabolite_dict, gene_dict=None):
+        """Trying to make a faster copy proceedure for cases where large
+        numbers of metabolites might be copied.  Such as when copying reactions.
+
+        """
+        the_copy = Reaction(self.id)
+        simple_attributes = ['reversibility',
+                             'gene_reaction_rule',
+                             'subsystem',
+                             'boundary',
+                             'objective_coefficient',
+                             'lower_bound',
+                             'upper_bound',
+                             'notes',
+                             'reaction',
+                             'variable_kind']
+        [setattr(the_copy, x, getattr(self, x))
+         for x in simple_attributes]
+        the_copy._model = the_model
+        if gene_dict:
+            the_copy._genes = dict([(gene_dict[k.id], v)
+                                for k, v in self._genes.items()])
+        the_copy._metabolites = dict([(metabolite_dict[k.id], v)
+                                      for k, v in self._metabolites.items()])
+        the_copy._boundary_metabolites = dict([(metabolite_dict[k.id], v)
+                                               for k, v in self._boundary_metabolites.items()])
+
+        #make the metabolites and genes aware of the reaction
+        [k._reaction.add(the_copy)
+         for k in the_copy._genes.keys()]
+        [k._reaction.add(the_copy)
+         for k in the_copy._metabolites.keys()]
+        [k._reaction.add(the_copy)
+         for k in the_copy._boundary_metabolites.keys()]
+        return(the_copy)
 
     def pop(self, the_metabolite):
         """Remove a metabolite from the reaction and return the
@@ -194,6 +229,15 @@ class Reaction(Object):
         new_reaction.id = self.id + '_' + other_reaction.id
         new_reaction.subtract_metabolites(deepcopy(other_reaction._metabolites))
         return new_reaction
+
+    def __imul__(self, the_coefficient):
+        """Allows the reaction coefficients to be rapidly scaled.
+        
+        """
+        [self._metabolites.update({k: the_coefficient * v})
+         for k, v in self._metabolites.items()]
+        self.reconstruct_reaction()
+        return self
 
     def parse_gene_association(self, the_type='gene'):
         """Extract all genes from the Boolean Gene_Association string.
