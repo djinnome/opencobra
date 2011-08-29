@@ -81,7 +81,24 @@ class Metabolite(Object):
         """
         new_metabolite = deepcopy(self)
         return new_metabolite
+    def guided_copy(self, the_model):
+        """Trying to make a faster copy proceedure for cases where large
+        numbers of metabolites might be copied.  Such as when copying reactions.
 
+        """
+        the_copy = Metabolite(self.id)
+        simple_attributes = ['compartment',
+                             'notes',
+                             '_constraint_sense',
+                             '_bound',
+                             'charge']
+
+        [setattr(the_copy, x, getattr(self, x))
+         for x in simple_attributes]
+        the_copy.formula = deepcopy(self.formula)
+        the_copy._model = the_model
+        return(the_copy)
+    
     def remove_from_model(self, the_model):
         """Removes the association
 

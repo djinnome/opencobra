@@ -239,6 +239,18 @@ class Reaction(Object):
         self.reconstruct_reaction()
         return self
 
+    def __mul__(self, the_coefficient):
+        """Allows a reaction to be multipled by a coeffient.
+        
+        Should this return a new reaction?
+        
+        """
+        [self._metabolites.update({k: the_coefficient * v})
+         for k, v in self._metabolites.items()]
+        self.reconstruct_reaction()
+        return self
+        
+
     def parse_gene_association(self, the_type='gene'):
         """Extract all genes from the Boolean Gene_Association string.
 

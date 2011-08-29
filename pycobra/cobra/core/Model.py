@@ -135,12 +135,51 @@ class Model(Object):
         self.id = self.id + '_' + other_model.id
         return self
 
-    def copy(self):
-        """Speed this up.
-        
+    def copy(self, additional_attributes=None, print_time=False):
+        """Provides a partial 'deepcopy' of the Model.  All of the Metabolite, Gene,
+        and Reaction objects are created anew; however, attributes not assigned in
+        the __init__ function will be ignored unless contained in additional_attributes.
+
+        additional_attributes: None or a list of attributes added to the object by
+        the user that should be preserved during the copy procedure.
+
+        print_time: Boolean used for debugging
+
         """
-        the_copy = deepcopy(self)
+        the_copy = Model(self.id)
+        if additional_attributes:
+            [setattr(the_copy, x, getattr(self, x))
+             for x in additional_attributes]
+        the_copy.compartments = deepcopy(self.compartments)
+        if print_time:
+            from time import time
+            start_time = time()
+        the_metabolites = [x.guided_copy(the_copy)
+                           for x in self.metabolites]
+        if print_time:
+            print 'Metabolite guided copy: %1.4f'%(time() - start_time)
+            start_time = time()
+        the_genes = [x.guided_copy(the_copy)
+                           for x in self.genes]
+        if print_time:
+            print 'Gene guided copy: %1.4f'%(time() - start_time)
+            start_time = time()
+        metabolite_dict = dict([(k.id, k)
+                                 for k in the_metabolites])
+        gene_dict = dict([(k.id, k)
+                                 for k in the_genes])
+        the_reactions = [x.guided_copy(the_copy, metabolite_dict,gene_dict)
+                         for x in self.reactions]
+        if print_time:
+            print 'Reaction guided copy: %1.4f'%(time() - start_time)
+        the_copy.reactions = the_reactions
+        the_copy.genes = the_genes
+        the_copy.metabolites = the_metabolites
+        the_copy._metabolite_dict = metabolite_dict
+        the_copy._gene_dict = gene_dict
         return the_copy
+        
+
         
     def add_metabolites(self, metabolite_list,
                         expand_stoichiometric_matrix=False):
