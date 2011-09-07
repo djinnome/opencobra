@@ -137,13 +137,22 @@ def convert_to_irreversible(cobra_model):
     """Will break all of the reversible reactions into two separate irreversible reactions with
     different directions.  Useful for some modeling problems.
 
-    cobra_model: A Model object.
+    cobra_model: A Model object which will be modified in place.
+
     
     """
-    print 'convert_to_irreversible is not yet implemented'
-    #should be easy with the cobra.Reaction objects.  Just need to make sure the copy doesn't
-    #deepcopy the metabolites.
-
+    reactions_to_add = []
+    for reaction in cobra_model.reactions:
+        if reaction.lower_bound < 0:
+            reverse_reaction = Reaction(reaction.id + "_reverse")
+            reverse_reaction.lower_bound = 0
+            reverse_reaction.upper_bound = reaction.lower_bound * -1
+            reaction.lower_bound = 0
+            reaction_dict = dict([(k, v*-1)
+                                  for k, v in reaction._metabolites.items()])
+            reverse_reaction.add_metabolites(reaction_dict)
+            reactions_to_add.append(reverse_reaction)
+    cobra_model.add_reactions(reactions_to_add)
  
     
    
@@ -207,3 +216,7 @@ if __name__ == '__main__':
         cobra_model = load(in_file)
 
     print 'Need to add in tests'
+    test_model = cobra_model.copy()
+    start_time = time()
+    convert_to_irreversible(test_model)
+    print 'Convert to irreversible took %1.3f seconds'%(time()-start_time)
