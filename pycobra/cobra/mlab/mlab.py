@@ -132,7 +132,19 @@ def matlab_cobra_struct_to_python_cobra_object(matlab_struct):
         model_id = str(deepcopy(matlab_struct.description))
     the_model = Model(model_id)
     #Metabolite section
-    cobra_metabolites = map(Metabolite, matlab_cell_to_python_list(matlab_struct.mets))
+    #Deal with lack of compartment support in the COBRA Toolbox
+    the_metabolites = matlab_cell_to_python_list(matlab_struct.mets)
+    cobra_metabolites = []
+    if the_metabolites[0].endswith(']'):
+        [cobra_metabolites.append(Metabolite('%s_%s'%(x[:-3], x[-2]),
+                                              compartment=x[-2]))
+         for x in the_metabolites]
+    elif the_metabolites[0][-2] == '_':
+        [cobra_metabolites.append(Metabolite('%s_%s'%(x[:-2],x[-1]),
+                                             compartment=x[-1]))
+         for x in the_metabolites]
+    else:
+        raise Exception("Don't know how to extract compartment from %s"%the_metabolites[0])
     _b = deepcopy(matlab_struct.b).tolist()
     if 'metNames' in struct_fields:
         _metabolite_names = matlab_cell_to_python_list(matlab_struct.metNames)
@@ -151,15 +163,40 @@ def matlab_cobra_struct_to_python_cobra_object(matlab_struct):
         _metabolite_formulas = matlab_cell_to_python_list(matlab_struct.metFormulas)
     else:
         _metabolite_formulas = ['']*len(the_model.metabolites)
-    for the_metabolite, b, n, c, f in zip(cobra_metabolites,
-                                          _b,
-                                          _metabolite_names,
-                                          _constraint_sense,
-                                          _metabolite_formulas):
+    if 'metCharge' in struct_fields:
+        _metabolite_charges = matlab_struct.metCharge.flatten().tolist()
+    else:
+        _metabolite_charges = [None]*len(cobra_metabolites)
+    if 'metCASID' in struct_fields:
+        _metabolite_cas_id = matlab_cell_to_python_list(matlab_struct.metCASID)
+    else:
+        _metabolite_cas_id = [None]*len(cobra_metabolites)
+    if 'metKeggID' in struct_fields:
+        _metabolite_kegg_id = matlab_cell_to_python_list(matlab_struct.metKeggID)
+    else:
+        _metabolite_kegg_id = [None]*len(cobra_metabolites)
+    the_compartments = {}
+    for the_metabolite, b, n, c, f, ch, cas, kegg in zip(cobra_metabolites,
+                                                         _b,
+                                                         _metabolite_names,
+                                                         _constraint_sense,
+                                                         _metabolite_formulas,
+                                                         _metabolite_charges,
+                                                         _metabolite_cas_id,
+                                                         _metabolite_kegg_id):
         the_metabolite._bound = b[0]
         the_metabolite.name = n
         the_metabolite._constraint_sense = c
         the_metabolite.formula = Formula(f)
+        the_metabolite.charge = int(ch)
+        the_compartments[the_metabolite.compartment] = the_metabolite.compartment
+        if ch is not None:
+            the_metabolite.notes['CHARGE'] = int(ch)
+        if cas is not None and cas != '':
+            the_metabolite.notes['CASID'] = cas
+        if kegg is not None and kegg != '':
+            the_metabolite.notes['KEGGID'] = kegg
+            
     metabolite_dict = dict([(x.id, x)
                             for x in cobra_metabolites])
     #Reaction section
@@ -206,7 +243,14 @@ def matlab_cobra_struct_to_python_cobra_object(matlab_struct):
     #solution needs to be redesigned from a matlab proxy.
     #Now populate all of the reactions
     #NOTE: Having a metabolite referenece here would be a good idea
+    compartment_dict = {'e': 'extracellular',
+                        'c': 'cytosol',
+                        'p': 'periplasm'}
+    for the_key in the_compartments:
+        if the_key in compartment_dict:
+            the_compartments[the_key] = compartment_dict[the_key]
     the_model.add_reactions(cobra_reactions)
+    the_model.compartments = the_compartments
     the_model.update()
     return the_model
 

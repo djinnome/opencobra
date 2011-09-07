@@ -92,3 +92,6 @@ class Object(object):
     
     def __repr__(self):
         return repr(self.id)
+
+    def __str__(self):
+        return str(self.id)
