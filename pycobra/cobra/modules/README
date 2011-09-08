@@ -16,7 +16,7 @@ coefs are not.
 good
 5) For default values in functions don't put spaces around the =. def
 my_cat(color = 'black') is bad. def my_cat(color='black') is good.
-
+6) Also, unless absolutely necessary you should import functions from modules and not use the whole path name.  This allows for faster transitions if we need to change an upstream module or want to maintain python and jython compatibility, or want to test some new package. 
 
 If a function something requires a very specific set of data files then it
 is best to make a module.
