@@ -172,8 +172,8 @@ def double_gene_deletion(cobra_model, gene_list_1=None, gene_list_2=None,
             error_reporting = tmp_dict['error_reporting']
     else:
         cobra_model = deepcopy(cobra_model)
-    lower_bounds = deepcopy(cobra_model._lower_bounds)
-    upper_bounds = deepcopy(cobra_model._upper_bounds)
+    #this is a slow way to revert models.
+    wt_model = cobra_model.copy()
     if not gene_list_1:
         gene_list_1 = cobra_model.genes
     #Get default values to use if the deletions do not alter any reactions
@@ -244,13 +244,12 @@ def double_gene_deletion(cobra_model, gene_list_1=None, gene_list_2=None,
                                    error_reporting:
                                 print '%s / %s: %s status: %s'%(gene_1, gene_2, solver,
                                                                 the_status)   
+                            #Reset the model to orginial form.
+                            cobra_model = wt_model.copy()
                         else:
                             tmp_solution = basal_f
                     deletion_array[j, i] = deletion_array[i, j] = tmp_solution
-                    #Reset the model to orginial form.
-                    cobra_model._trimmed = False
-                    cobra_model._lower_bounds = deepcopy(lower_bounds)
-                    cobra_model._upper_bounds = deepcopy(upper_bounds)
+
     else:
         deletion_array = zeros([len(gene_list_1), len(gene_list_2)])
         #Now deal with the case where the gene lists are different
@@ -290,13 +289,12 @@ def double_gene_deletion(cobra_model, gene_list_1=None, gene_list_2=None,
                                    error_reporting:
                                 print '%s / %s: %s status: %s'%(gene_1, gene_2, solver,
                                                             cobra_model.solution.status)
-
+                            #Reset the model to wt form
+                            cobra_model = wt_model.copy()
                         else:
                             tmp_solution = basal_f
                     deletion_array[i, j] = tmp_solution
-                    cobra_model._trimmed = False
-                    cobra_model._lower_bounds = deepcopy(lower_bounds)
-                    cobra_model._upper_bounds = deepcopy(upper_bounds)
+
     return({'x': gene_list_1, 'y': gene_list_2, 'data': deletion_array})
 
 
@@ -462,8 +460,7 @@ def old_double_gene_deletion(cobra_model, gene_list_1=None, gene_list_2=None,
             error_reporting = tmp_dict['error_reporting']
     else:
         cobra_model = deepcopy(cobra_model)
-    lower_bounds = deepcopy(cobra_model._lower_bounds)
-    upper_bounds = deepcopy(cobra_model._upper_bounds)
+    wt_model = cobra_model.copy()
     if not gene_list_1:
         gene_list_1 = cobra_model.genes
     #Get default values to use if the deletions do not alter any reactions
@@ -537,14 +534,13 @@ def old_double_gene_deletion(cobra_model, gene_list_1=None, gene_list_2=None,
                             if the_status not in ['opt', 'optimal']  and \
                                    error_reporting:
                                 print '%s / %s: %s status: %s'%(gene_1, gene_2, solver,
-                                                                the_status)   
+                                                                the_status)
+                            #Reset the model to orginial form.
+                            cobra_model = wt_model.copy()
                         else:
                             tmp_solution = basal_f
                     deletion_array[j, i] = deletion_array[i, j] = tmp_solution
-                    #Reset the model to orginial form.
-                    cobra_model._trimmed = False
-                    cobra_model._lower_bounds = deepcopy(lower_bounds)
-                    cobra_model._upper_bounds = deepcopy(upper_bounds)
+
     else:
         deletion_array = zeros([len(gene_list_1), len(gene_list_2)])
         #Now deal with the case where the gene lists are different
@@ -587,13 +583,12 @@ def old_double_gene_deletion(cobra_model, gene_list_1=None, gene_list_2=None,
                                    error_reporting:
                                 print '%s / %s: %s status: %s'%(gene_1, gene_2, solver,
                                                             cobra_model.solution.status)
-
+                            #Reset the model to the wt
+                            cobra_model = wt_model.copy()
                         else:
                             tmp_solution = basal_f
                     deletion_array[i, j] = tmp_solution
-                    cobra_model._trimmed = False
-                    cobra_model._lower_bounds = deepcopy(lower_bounds)
-                    cobra_model._upper_bounds = deepcopy(upper_bounds)
+
     return({'x': gene_list_1, 'y': gene_list_2, 'data': deletion_array})
 
 
@@ -658,18 +653,19 @@ if __name__ == '__main__':
             s_data = the_solution['data']
             s_x = the_solution['x']
             s_y = the_solution['y']
-            for gene_x, gene_y in zip(element_list_1, element_list_2):
-                expected_value = data[element_list_1.index(gene_x),
-                                      element_list_2.index(gene_y)]
-                simulated_value = floor(100*s_data[s_x.index(gene_x),
-                                                   s_y.index(gene_y)])/100
-                if simulated_value != expected_value:
-                    print '\t\tFAILED: %s/%s simulation (%1.3f) != expectation (%1.3f)'%(gene_x,
-                                                                                         gene_y,
-                                                                                         simulated_value,
-                                                                                         expected_value)
-                else:
-                    print '\t\tPASSED: %s/%s simulation (%1.3f) ~= expectation (%1.3f)'%(gene_x,
-                                                                                         gene_y,
-                                                                                         simulated_value,
+            for gene_x in element_list_1:
+                for gene_y in element_list_2:
+                    expected_value = data[element_list_1.index(gene_x),
+                                          element_list_2.index(gene_y)]
+                    simulated_value = floor(100*s_data[s_x.index(gene_x),
+                                                       s_y.index(gene_y)])/100
+                    if simulated_value != expected_value:
+                        print '\t\tFAILED: %s/%s simulation (%1.3f) != expectation (%1.3f)'%(gene_x,
+                                                                                             gene_y,
+                                                                                             simulated_value,
+                                                                                             expected_value)
+                    else:
+                        print '\t\tPASSED: %s/%s simulation (%1.3f) ~= expectation (%1.3f)'%(gene_x,
+                                                                                             gene_y,
+                                                                                             simulated_value,
                                                                                          expected_value)
