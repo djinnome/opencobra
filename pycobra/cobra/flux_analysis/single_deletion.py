@@ -21,7 +21,7 @@ from cobra.flux_analysis.moma import moma
 def single_deletion(cobra_model, element_list=None,
                     method='fba', the_problem='return',
                     element_type='gene', solver='glpk',
-                    error_reporting=None, gene_prefix='(STM|PSLT){1}'):
+                    error_reporting=None):
     """Wrapper for single_gene_deletion and the single_reaction_deletion
     functions
 
@@ -50,8 +50,8 @@ def single_deletion(cobra_model, element_list=None,
         the_solution = single_gene_deletion(cobra_model, element_list,
                                     method=method, the_problem=the_problem,
                                     solver=solver,
-                                    error_reporting=error_reporting,
-                                            gene_prefix=gene_prefix)
+                                    error_reporting=error_reporting)
+
     else:
         the_solution = single_reaction_deletion(cobra_model, element_list,
                                         method=method, the_problem=the_problem,
@@ -163,7 +163,7 @@ def single_reaction_deletion(cobra_model, reaction_list=None,
 
 def single_gene_deletion(cobra_model, gene_list=None,
                          method='fba', the_problem='reuse', solver='glpk',
-                         error_reporting=None,gene_prefix='(STM|PSLT){1}'):
+                         error_reporting=None):
     """Performs optimization simulations to realize the objective defined
     from cobra_model._objective_coefficients after deleting each gene in
     gene_list from the model.

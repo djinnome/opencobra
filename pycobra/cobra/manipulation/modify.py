@@ -143,6 +143,9 @@ def convert_to_irreversible(cobra_model):
     """
     reactions_to_add = []
     for reaction in cobra_model.reactions:
+        #Potential bug because a reaction might run backwards naturally
+        #and this would result in adding an empty reaction to the
+        #model in addition to the reverse reaction.
         if reaction.lower_bound < 0:
             reverse_reaction = Reaction(reaction.id + "_reverse")
             reverse_reaction.lower_bound = 0

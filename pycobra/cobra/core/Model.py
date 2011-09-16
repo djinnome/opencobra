@@ -168,7 +168,7 @@ class Model(Object):
                                  for k in the_metabolites])
         gene_dict = dict([(k.id, k)
                                  for k in the_genes])
-        the_reactions = [x.guided_copy(the_copy, metabolite_dict,gene_dict)
+        the_reactions = [x.guided_copy(the_copy, metabolite_dict, gene_dict)
                          for x in self.reactions]
         if print_time:
             print 'Reaction guided copy: %1.4f'%(time() - start_time)
@@ -505,14 +505,16 @@ class Model(Object):
         the_solution = None
         try:
             the_solution = solve_problem(solver_function)
-        except:
+        except Exception, e:
+            print e
             print '%s did not work'%solver
             for solver, solver_function in solver_dict.items():
                 try:
                     print "now trying %s"%solver
                     the_solution = solve_problem(solver_function)
                     break
-                except:
+                except Exception, e:
+                    print e
                     print '%s did not work'%solver
                     continue
 

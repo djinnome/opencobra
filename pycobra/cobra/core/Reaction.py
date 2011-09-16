@@ -39,7 +39,8 @@ class Reaction(Object):
         
         """
         Object.__init__(self, name)
-        self.reversibility = 0
+        self.reversibility = 0 #Deprecated.  This is determined by the lower
+        #and upper bound
         self.gene_reaction_rule = ''
         self.subsystem = ''
         self._genes = {} #A gene and the number of copies required for the
@@ -156,7 +157,8 @@ class Reaction(Object):
                              'upper_bound',
                              'notes',
                              'reaction',
-                             'variable_kind']
+                             'variable_kind',
+                             'name']
         [setattr(the_copy, x, getattr(self, x))
          for x in simple_attributes]
         the_copy._model = the_model

@@ -91,7 +91,8 @@ class Metabolite(Object):
                              'notes',
                              '_constraint_sense',
                              '_bound',
-                             'charge']
+                             'charge',
+                             'name']
 
         [setattr(the_copy, x, getattr(self, x))
          for x in simple_attributes]

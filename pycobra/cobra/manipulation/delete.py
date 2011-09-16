@@ -60,7 +60,69 @@ def prune_unused_reactions(cobra_model):
 
 
 
-def delete_model_genes(cobra_model, gene_list, gene_prefix='(STM|PSLT){1}',
+def delete_model_genes(cobra_model, gene_list,
+                       cumulative_deletions=False, disable_orphans=False):
+    """delete_model_genes will set the upper and lower bounds for reactions
+    catalyzed by the genes in gene_list if deleting the genes means that
+    the reaction cannot proceed according to
+    cobra_model.reactions[:].gene_reaction_rule
+
+    cumulative_deletions: False or True.  If True then any previous
+    deletions will be maintained in the model.
+
+    TODO: Rewrite to use dicts for _trimmed*
+
+    TODO: All this will be replaced by Boolean logic associated with
+    #the cobra.Gene.functional in cobra.Reaction.gene_reaction_rule
+
+    TODO: Update this to refer to cobra.(Gene|Reaction) in the
+    _trimmed_(genes|reactions) fields and remove _trimmed_indices
+    
+    """
+    if not hasattr(cobra_model, '_trimmed') or not cumulative_deletions:
+        cobra_model._trimmed = False
+        cobra_model._trimmed_genes = []
+        cobra_model._trimmed_reactions = {} #Store the old bounds in here.
+    spontaneous_re = re.compile('(^|(?<=( |\()))s0001(?=( |\)|$))')
+    #Allow a single gene to be fed in as a string instead of a list.
+    if not hasattr(gene_list, '__iter__') or \
+           hasattr(gene_list, 'id'):  #cobra.Gene has __iter__
+        gene_list = [gene_list]
+
+    if not hasattr(gene_list[0], 'id'):
+        if gene_list[0] in cobra_model.genes:
+                tmp_gene_dict = dict([(x.id, x) for x in cobra_model.genes])
+        else:
+            #assume we're dealing with names if no match to an id
+            tmp_gene_dict = dict([(x.name, x) for x in cobra_model.genes])
+        gene_list = [tmp_gene_dict[x] for x in gene_list]
+
+
+    the_reactions = set()
+    [the_reactions.update(x._reaction)
+     for x in gene_list]
+    for the_reaction in the_reactions:
+        old_lower_bound = the_reaction.lower_bound
+        old_upper_bound = the_reaction.upper_bound
+        the_gene_reaction_relation = deepcopy(the_reaction.gene_reaction_rule)
+        for the_gene in the_reaction._genes:
+            the_gene_re = re.compile('(^|(?<=( |\()))%s(?=( |\)|$))'%re.escape(the_gene.id))
+            if the_gene in gene_list:
+                the_gene_reaction_relation = the_gene_re.sub('False', the_gene_reaction_relation)
+            else:
+                the_gene_reaction_relation = the_gene_re.sub('True', the_gene_reaction_relation)
+        the_gene_reaction_relation = spontaneous_re.sub('True', the_gene_reaction_relation)
+        if not eval(the_gene_reaction_relation):
+            cobra_model._trimmed_reactions[the_reaction] = (old_lower_bound,
+                                                            old_upper_bound)
+            the_reaction.lower_bound = 0.
+            the_reaction.upper_bound = 0.
+            cobra_model._trimmed = True
+
+    cobra_model._trimmed_genes =  list(set(cobra_model._trimmed_genes + gene_list))
+
+
+def old_delete_model_genes(cobra_model, gene_list, gene_prefix='(STM|PSLT){1}',
                        cumulative_deletions=False, disable_orphans=False):
     """delete_model_genes will set the upper and lower bounds for reactions
     catalyzed by the genes in gene_list if deleting the genes means that
@@ -88,6 +150,7 @@ def delete_model_genes(cobra_model, gene_list, gene_prefix='(STM|PSLT){1}',
     _trimmed_(genes|reactions) fields and remove _trimmed_indices
     
     """
+    raise Exception('This does not work')
     if not hasattr(cobra_model, '_trimmed') or not cumulative_deletions:
         cobra_model._trimmed = False
         cobra_model._trimmed_genes = []
@@ -184,33 +247,23 @@ if __name__ == '__main__':
     #TODO: Add in tests for each function
     cumulative_deletions=False
     disable_orphans=False
-    gene_list = ['STM1332', 'STM1011']
-    #The following reactions are trimmed when STM1332 and STM1011 are deleted
-    dependent_reactions = set(['OA5L_ST',
-                               'OAP18pp',
-                               'OAP5pp',
-                               'OAP9pp',
-                               'OAP19pp',
-                               'OAP4pp',
-                               'OAP2pp',
-                               'OAP14pp',
-                               'OAP3pp',
-                               'OAP13pp',
-                               'OAP1pp',
-                               'OA4VL_ST',
-                               'OAP11pp',
-                               'OAP15pp',
-                               'OAP6pp',
-                               'OAP7pp',
-                               'OA4L_ST',
-                               'OAP17pp',
-                               'OAP16pp',
-                               'OAP8pp',
-                               'OAP12pp',
-                               'OAP10pp',
-                               'OA5VL_ST'])
+    gene_list = ['STM1067', 'STM0227']
+    #The following reactions are trimmed when STM1332 and STM1101 are deleted
+    dependent_reactions = set(['3HAD121',
+                               '3HAD160',
+                               '3HAD80',
+                               '3HAD140',
+                               '3HAD180',
+                               '3HAD100',
+                               '3HAD181',
+                               '3HAD120',
+                               '3HAD60',
+                               '3HAD141',
+                               '3HAD161',
+                               'T2DECAI',
+                               '3HAD40'])
     delete_model_genes(cobra_model, gene_list)
-    symmetric_difference = dependent_reactions.symmetric_difference(cobra_model._trimmed_reactions)
+    symmetric_difference = dependent_reactions.symmetric_difference([x.id for x in cobra_model._trimmed_reactions])
     if len(symmetric_difference) == 0:
         print 'Successful deletion of %s'%repr(gene_list)
     else:
