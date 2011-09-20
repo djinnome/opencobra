@@ -80,17 +80,17 @@ def assess_medium_component_essentiality(cobra_model, the_components=None,
         essentiality_dict['the_condition'] = the_condition
     return(essentiality_dict)
 
-def deletion_analysis(the_model, the_medium='MgM', deletion_type='single',
+def deletion_analysis(cobra_model, the_medium='MgM', deletion_type='single',
                       work_directory = '/Users/danie/tmp/', growth_cutoff=0.001,
                       the_problem='return', n_processes=6, element_type='gene',
-                      solver='glpk', error_reporting=None, method='fba'):
+                      solver='glpk', error_reporting=None, method='fba', gene_list=None):
     """Performs single and/or double deletion analysis on all the genes in the model.  Provides
     an interface to parallelize the deletion studies.
 
-    the_model: A Model object.
+    cobra_model: A Model object.
 
     the_medium: Is None, a string, or a dictionary.  If a string then the
-    initialize_growth_medium function expects that the_model has an
+    initialize_growth_medium function expects that cobra_model has an
     attribute dictionary called media_compositions, which is a dictionary of
     dictionaries for various medium compositions.  Where a medium
     composition is a dictionary of exchange reaction ids for the medium
@@ -115,15 +115,17 @@ def deletion_analysis(the_model, the_medium='MgM', deletion_type='single',
 
     error_reporting: None or True
 
+    gene_list: None or a list of genes to delete from the model.
+
     Returns: Nothing.  However, the script will add attributes single_deletion_* and
-    double_deletion_* to the_model containing the simulation results.
+    double_deletion_* to cobra_model containing the simulation results.
 
     """
     #When using ppmap, it's easier to feed in the parameters as a list,
     #if the defaults need to be changed
-    if isinstance(the_model, list):
-        tmp_model = the_model
-        the_model = tmp_model[0]
+    if isinstance(cobra_model, list):
+        tmp_model = cobra_model
+        cobra_model = tmp_model[0]
         if len(tmp_model) > 1:
             the_medium = tmp_model[1]
             if len(tmp_model) > 2:
@@ -133,45 +135,49 @@ def deletion_analysis(the_model, the_medium='MgM', deletion_type='single',
                     if len(tmp_model) > 4:
                         growth_cutoff = tmp_model[4]
     if the_medium:
-        initialize_growth_medium(the_model, the_medium)
-    the_problem=the_model.optimize(the_problem=the_problem, solver=solver)
+        initialize_growth_medium(cobra_model, the_medium)
+    the_problem=cobra_model.optimize(the_problem=the_problem, solver=solver)
     #Store the basal model for the simulations
+    if gene_list is None:
+        gene_list = [x.id for x in cobra_model.genes]
     if deletion_type != 'double_only':
-        the_model.single_deletion_growth_wt = the_model.solution.f
-        growth_rate_dict, growth_solution_status_dict, problem_dict = single_deletion(deepcopy(the_model),
+        cobra_model.single_deletion_growth_wt = cobra_model.solution.f
+        growth_rate_dict, growth_solution_status_dict, problem_dict = single_deletion(deepcopy(cobra_model),
+                                                                                      element_list=gene_list,
                                                                                       the_problem=the_problem,
                                                                                       element_type=element_type,
                                                                                       solver=solver,
                                                                                       error_reporting=error_reporting,
                                                                                       method=method)
         del problem_dict
-        the_model.single_deletion_growth_dict = growth_rate_dict
-        the_model.single_deletion_solution_status_dict = growth_solution_status_dict
-        the_model.single_deletion_genes = deepcopy(growth_rate_dict.keys())
-        the_model.single_deletion_lethal = [x for x in growth_rate_dict.keys()
+        cobra_model.single_deletion_growth_dict = growth_rate_dict
+        cobra_model.single_deletion_solution_status_dict = growth_solution_status_dict
+        cobra_model.single_deletion_genes = deepcopy(growth_rate_dict.keys())
+        cobra_model.single_deletion_lethal = [x for x in growth_rate_dict.keys()
                                             if growth_rate_dict[x] <  growth_cutoff]
 
-        the_model.single_deletion_growth_medium = the_medium 
-        the_model.single_deletion_nonlethal =  list(set(growth_rate_dict.keys()).difference(the_model.single_deletion_lethal))
+        cobra_model.single_deletion_growth_medium = the_medium 
+        cobra_model.single_deletion_nonlethal =  list(set(growth_rate_dict.keys()).difference(cobra_model.single_deletion_lethal))
         if not path.lexists(work_directory):
             mkdir(work_directory)
-        with open(work_directory + the_medium + '_single_' + the_model.description, 'w') as out_file:
-            dump(the_model, out_file)
+        with open(work_directory + the_medium + '_single_' + cobra_model.description, 'w') as out_file:
+            dump(cobra_model, out_file)
 
     if deletion_type == 'double' or deletion_type == 'double_only':
         #It appears that the glpk interface no longer works will with sending
         #a glpk.LPX object through ppmap, so just set the basis to return
         if the_problem:
             the_problem='return'
-        the_model.double_deletion_growth_medium = the_medium 
-        the_model.double_deletion_growth_wt = the_model.solution.f
+        cobra_model.double_deletion_growth_medium = the_medium 
+        cobra_model.double_deletion_growth_wt = cobra_model.solution.f
         if not ppmap:
             if n_processes > 0:
                 print "Couldn't import ppmap from cobra.external is parallel python installed?"
                 return
 
         else:
-            the_model = double_deletion_parallel(deepcopy(the_model),
+            cobra_model = double_deletion_parallel(deepcopy(cobra_model),
+                                                 genes_of_interest=gene_list,
                                                  the_problem=the_problem,
                                                  n_processes=n_processes,
                                                  element_type=element_type,
@@ -180,7 +186,7 @@ def deletion_analysis(the_model, the_medium='MgM', deletion_type='single',
                                                  method=method)
         #This indicates the genes that were run through double deletion but
         #the x and y lists specify the order
-        the_model.double_deletion_genes = deepcopy(the_model.genes)
-        with open(work_directory + the_medium + '_double_' + the_model.description, 'w') as out_file:
-            dump(the_model, out_file)
-    return the_model 
+        cobra_model.double_deletion_genes = deepcopy(cobra_model.genes)
+        with open(work_directory + the_medium + '_double_' + cobra_model.description, 'w') as out_file:
+            dump(cobra_model, out_file)
+    return cobra_model 

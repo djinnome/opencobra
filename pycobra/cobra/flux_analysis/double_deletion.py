@@ -352,7 +352,7 @@ def double_gene_deletion_parallel(cobra_model, n_processes=4,
     if not genes_of_interest:
         #If no genes_of_interest are specified then assume we want to
         #compare all genetic interactions in the network
-        all_genes = list(set(deepcopy(cobra_model.genes)))
+        all_genes = [x.id for x in cobra_model.genes]
         second_gene_list = all_genes
     elif isinstance(genes_of_interest[0], str):
         #If genes_of_interest is a list then assume the list be scanned
@@ -374,12 +374,12 @@ def double_gene_deletion_parallel(cobra_model, n_processes=4,
     # single_deletion_growth_dict, tmp_stat = tools.single_deletion( deepcopy( cobra_model),
     #gene_list = list( set( all_genes ).union( second_gene_list ) ), the_problem = the_problem )
     for i in range(n_processes-1):
-        the_rows.append({'cobra_model': deepcopy(cobra_model), 'method': method,
+        the_rows.append({'cobra_model': cobra_model.copy(), 'method': method,
                          'gene_list_1': deepcopy(all_genes[i*division_count:division_count*(i+1)]),
                          'gene_list_2': deepcopy(second_gene_list), 'the_problem': the_problem,
                          'solver': solver,
                          'error_reporting': error_reporting})
-    the_rows.append({'cobra_model': deepcopy(cobra_model), 'method': method,
+    the_rows.append({'cobra_model': cobra_model.copy(), 'method': method,
                      'gene_list_1': deepcopy(all_genes[(n_processes-1)*division_count:]),
                      'gene_list_2': deepcopy(second_gene_list), 'the_problem': the_problem,
                      'solver': solver,
@@ -592,7 +592,7 @@ def old_double_gene_deletion(cobra_model, gene_list_1=None, gene_list_2=None,
     return({'x': gene_list_1, 'y': gene_list_2, 'data': deletion_array})
 
 
-if __name__ == '__main__':
+if __name__ == '__main__' and False:
     from cPickle import load
     from time import time
     from math import floor
