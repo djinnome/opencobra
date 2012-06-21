@@ -1,5 +1,3 @@
 cobra: Contains the COBRA Toolbox for MATLAB.  Most recent version is 2.0.5
 
-foundry: Contains contributed modules for the COBRA Toolbox for MATLAB.
-
 python: Contains COBRA for python aka cobra py.  Beta release scheduled for july 1st, 2012.
